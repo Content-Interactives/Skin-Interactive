@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Interactive Skin Diagram</title>
+  <style>
+    body {
+      background: #f7f7f7;
+      font-family: sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .skin-container {
+      position: relative;
+      width: 600px;
+      height: 800px;
+      margin-top: 40px;
+    }
+    .skin-part {
+      position: absolute;
+      top: 0; left: 0;
+      cursor: pointer;
+    }
+    .skin-part:hover {
+      filter: drop-shadow(0 0 8px #ffb300);
+    }
+    .label {
+      position: absolute;
+      background: #fff;
+      border: 2px solid #e5e7eb;
+      border-radius: 10px;
+      padding: 4px 12px;
+      font-size: 1rem;
+      font-weight: 600;
+      color: #222;
+      pointer-events: none;
+      z-index: 10;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      display: none;
+      letter-spacing: 0.01em;
+      font-family: inherit;
+      transition: box-shadow 0.2s;
+    }
+  </style>
+</head>
+<body>
+  <h1>Interactive Skin Diagram</h1>
+  <div class="skin-container" id="skinContainer">
+    <!-- SVGs will be inlined here -->
+    <!-- Example: <div class="skin-part" data-name="Arrector Pili"> ...SVG... </div> -->
+  </div>
+  <script>
+    // List of SVG files, their display names, and placement info (ordered back to front)
+    const skinParts = [
+      { file: 'Dermis.svg', name: 'Dermis', x: -427, y: -478, width: 244.5, height: 234 },
+      { file: 'Subcutaneous Fatty Tissue (Hypodermis).svg', name: 'Subcutaneous Fatty Tissue (Hypodermis)', x: -419.5, y: -325, width: 269.19, height: 127.23 },
+      { file: 'Stratum Lucidum.svg', name: 'Stratum Lucidum', x: -406.5, y: -541.5, width: 204.5, height: 75.5 },
+      { file: 'Arrector Pili.svg', name: 'Arrector Pili', x: -419, y: -453, width: 79.5, height: 100 },
+      { file: 'Stratum Basale.svg', name: 'Stratum Basale', x: -427, y: -478.5, width: 245, height: 37.5 },
+      { file: 'Stratum Spinosum.svg', name: 'Stratum Spinosum', x: -428, y: -507, width: 246, height: 59 },
+      { file: 'Stratum Granulosum.svg', name: 'Stratum Granulosum', x: -427.5, y: -523.5, width: 246, height: 63 },
+      { file: 'Stratum Corneum.svg', name: 'Stratum Corneum', x: -428, y: -558.5, width: 247, height: 91.51 },
+      { file: 'Hair Bulb.svg', name: 'Hair Bulb', x: -325.5, y: -328, width: 18.55, height: 52.11 },
+      { file: 'Hair.svg', name: 'Hair', x: -432, y: -565.5, width: 134, height: 239 },
+      { file: 'Hair Follicle.svg', name: 'Hair Follicle', x: -364.03, y: -441.58, width: 74.12, height: 172.17 },
+      { file: 'Artery.svg', name: 'Artery', x: -404, y: -421.5, width: 124.52, height: 182 },
+      { file: 'Vein.svg', name: 'Vein', x: -350, y: -270, width: 74, height: 63 },
+      { file: 'Capillaries.svg', name: 'Capillaries', x: -424.58, y: -440.5, width: 244.14, height: 162.07 },
+      { file: 'Sweat Gland.svg', name: 'Sweat Gland', x: -411.1, y: -449, width: 218.61, height: 154.06 },
+      { file: 'Sebaceous Gland.svg', name: 'Sebaceous Gland', x: -383.51, y: -424.5, width: 26.63, height: 34.59 },
+    ];
+
+    const container = document.getElementById('skinContainer');
+
+    // Find min/max for normalization
+    const minX = Math.min(...skinParts.map(p => p.x));
+    const minY = Math.min(...skinParts.map(p => p.y));
+    const maxX = Math.max(...skinParts.map(p => p.x + p.width));
+    const maxY = Math.max(...skinParts.map(p => p.y + p.height));
+    const containerWidth = maxX - minX;
+    const containerHeight = maxY - minY;
+    // Set container size dynamically
+    container.style.width = containerWidth + 'px';
+    container.style.height = containerHeight + 'px';
+
+    // Helper to fetch and inline SVGs
+    async function loadSVG(part) {
+      const res = await fetch(part.file);
+      const text = await res.text();
+      const div = document.createElement('div');
+      div.className = 'skin-part';
+      div.setAttribute('data-name', part.name);
+      div.innerHTML = text;
+      // Use original coordinates, normalized to (0,0)
+      div.style.left = (part.x - minX) + 'px';
+      div.style.top = (part.y - minY) + 'px';
+      div.style.width = part.width + 'px';
+      div.style.height = part.height + 'px';
+      return div;
+    }
+
+    // Add label element
+    const label = document.createElement('div');
+    label.className = 'label';
+    container.appendChild(label);
+
+    // Load and add all SVGs
+    Promise.all(skinParts.map(part => loadSVG(part))).then(divs => {
+      divs.forEach(div => {
+        div.addEventListener('click', function(e) {
+          e.stopPropagation();
+          // Get bounding rect for label positioning
+          const rect = div.getBoundingClientRect();
+          const containerRect = container.getBoundingClientRect();
+          label.textContent = div.getAttribute('data-name');
+          label.style.left = (rect.right - containerRect.left + 10) + 'px';
+          label.style.top = (rect.top - containerRect.top + 10) + 'px';
+          label.style.display = 'block';
+        });
+        container.appendChild(div);
+      });
+    });
+
+    // Hide label when clicking outside
+    document.body.addEventListener('click', () => {
+      label.style.display = 'none';
+    });
+  </script>
+</body>
+</html> 
