@@ -1,43 +1,26 @@
 # Skin Interactive
 
-This repository contains the code for the **Skin Interactive**, designed to help students explore and understand skin anatomy—its layers and components such as dermis, epidermis, sweat glands, and hair follicles—through interactive visuals and instant feedback.
+Static anatomy lesson for skin layers and accessories (SVG-heavy). Curriculum notes: [Standards.md](Standards.md).
 
----
+**Live:** https://content-interactives.github.io/Skin-Interactive/
 
-## ​ Live Interactive
+## Development
 
-Try it out here:  
-👉 https://content-interactives.github.io/Skin-Interactive/
+```bash
+npx serve .
+```
 
----
+Open `index.html`.
 
-## ​ Where This Interactive Is Being Used
+## Layout
 
-This interactive is currently featured in the following locations:
+- `index.html` — entry  
+- `*.svg` — dermis, sweat gland, follicles, etc., as linked from the HTML
 
-- <img width="20" height="20" alt="image" src="https://github.com/user-attachments/assets/5d12571f-8e12-4441-98ab-c0bc94069a96" /> **CK-12 Intent Response**  
-  - 👉 PRODUCTION: [PENDING]  
-  - 👉 MASTER: [PENDING]  
-- 📘 **CK-12 Flexbooks**  
-  - 👉 [PENDING: Book/lesson link where this interactive appears]
+## Stack
 
----
+HTML, CSS, JavaScript.
 
-## ​ Standards & Subjects
+## Deployment
 
-This interactive aligns with the following topics and standards:
-
-- **📂 Subject Area**: Middle School Science (Life Science / Biology)  
-- **🩸 Topic**: Skin Anatomy — Exploring layers like epidermis, dermis, hypodermis, and associated structures  
-- **📏 Next Generation Science Standards (NGSS)**:  
-  - **MS-LS1-3** – Use arguments supported by evidence to explain how the body is a system of interacting subsystems composed of groups of cells.  
-  - **HS-LS1-2** – Develop and use a model to illustrate how structures of the body provide specific functions.  
-  - **NGSS.MS-LS1-3** – Reinforces how systems within the human body interact as subsystems.
-
----
-
-## ​​ Developer Notes
-
-- **Built with**: HTML, CSS, Javascript
-- **Deployed via**: GitHub Pages  
-- **See**: `index.html` and numerous `.svg` files for skin components (e.g., `Dermis.svg`, `Sweat Gland.svg`) :contentReference[oaicite:1]{index=1}
+Publish static files to GitHub Pages.
